@@ -3,12 +3,12 @@
 **English** · [Português](README.pt-BR.md)
 
 **Call of Duty: Black Ops Zombies** (Android 1.0.11) adapted for **Android TV**: fully playable with a gamepad,
-no touch HUD, Black Ops 1 console button layout and menus redesigned in the game's comic-book style.
+no touch HUD, the Black Ops 1 console button layout, and menus redesigned in the game's comic-book style.
 
 <p align="center"><img src="screenshots/01-titulo.png" width="80%" alt="Reimagined title screen"></p>
 
 > Non-profit fan project, not affiliated with Activision.
-> *Call of Duty* and *Call of Duty: Black Ops Zombies* are trademarks and property of **Activision Publishing, Inc.**
+> *Call of Duty* and *Call of Duty: Black Ops Zombies* are trademarks and the property of **Activision Publishing, Inc.**
 >
 > The game was **removed from Google Play** and is no longer sold. **This repository does not contain the game**
 > (no original APK, OBB, binaries or music) and never will. The patch in Releases only works when applied to your own
@@ -27,22 +27,22 @@ no touch HUD, Black Ops 1 console button layout and menus redesigned in the game
 **Controls (Xbox layout)**
 - Sticks to move and aim, triggers to shoot and aim down sights (hold-to-aim became toggle), X to reload.
 - Grenades and tacticals as in BO1: D-pad right for the claymore, LB for the other tactical (Monkey Bomb, Gersh, Matryoshka).
-- Every menu is navigable with the D-pad, with corner-bracket focus and transitions that hide the original SWF.
+- Every menu can be navigated with the D-pad, with corner-bracket focus and transitions that hide the original SWF.
 
 **Menus and interface**
 - Redesigned "Reimagined" title, main menu, character and map select, Single Player, New Game, Quit, Save & Quit,
   Pause and Game Over (Java layer drawn over the game).
-- Gamepad name editor; the name shows in the Player Profile, the pause menu and the co-op lobby.
+- Name editor driven by the gamepad; the name appears in the Player Profile, the pause menu and the co-op lobby.
 - Pause shows player, map, round and stats; Start also pauses Dead Ops.
 - Match timer in the HUD font (toggle in the pause menu) and TIME PLAYED in the Player Profile.
 - COD Points, More Apps and purchases removed.
 
 **Gameplay (binary patches)**
 - BO1-paced waves and drops: non-repeating drop cycle, Carpenter only with broken windows,
-  Death Machine only with power on or after someone had Quick Revive, DG-2 only from killing George.
+  Death Machine only with power on or after someone has had Quick Revive, DG-2 only after killing George.
 - Dead Ops Arcade unlocked from the start; death goes straight to Game Over.
-- Stable 30 FPS cap and FPS counter.
-- Fixes: a stuck zombie dies after 15 s without moving, and the game no longer closes on an already-freed sound.
+- A stable 30 FPS cap and an FPS counter.
+- Fixes: a stuck zombie dies after 15 s without moving, and the game no longer crashes when a sound that was already freed finishes playing.
 
 ## Status
 
@@ -61,7 +61,7 @@ Tested on a TCL TV with Android 11 (armeabi-v7a, 1280×720, 60 Hz) and an 8BitDo
 
 ## Required original files
 
-Check your files; with any other version the patch won't apply. The OBB is not modified: it's the same file the game downloaded.
+Check your files first: the patch will not apply to any other version. The OBB is not modified: it is the same file the game downloaded.
 
 | File | Size | SHA-256 |
 |---|---|---|
@@ -88,7 +88,7 @@ You need the original APK and OBB (table above), a PC with `adb` and `xdelta3`, 
    bash instalar.sh <TV-IP> base.apk blackops_etc.dz boz-reimagined-v0.1.xdelta
    ```
    The script checks the hashes, applies the patch, installs the APK and copies the OBB to
-   `/storage/emulated/0/Android/obb/com.activision.boz/`. The first time, the TV may ask you to authorize the PC.
+   `/storage/emulated/0/Android/obb/com.activision.boz/`. The first time you connect, the TV may ask you to authorize the PC.
 4. Pair the gamepad (Xbox layout) over Bluetooth and open the game.
 
 - **Windows:** apply the patch with [Delta Patcher](https://github.com/marco-calautti/DeltaPatcher) or
@@ -96,6 +96,38 @@ You need the original APK and OBB (table above), a PC with `adb` and `xdelta3`, 
   `adb install --no-incremental -r -g BOZ-TV.apk` and `adb push`.
 - **Original game already installed on the TV?** The signature differs: uninstall it first. This deletes your saves.
 - Always use `--no-incremental`; an incremental install once wiped the app and its data on a TV.
+
+## Co-op over the internet with ZeroTier (experimental)
+
+**Local Wi-Fi** co-op only looks for partners on the same network. [ZeroTier](https://www.zerotier.com) creates a
+virtual local network between different homes, so two TVs in different cities "see" each other as if they were
+on the same Wi-Fi.
+
+> ⚠️ **Not tested yet.** Co-op hasn't been tested even on the same network, and the game may look for the host
+> by broadcast, which doesn't always go through the VPN on Android. Whether it works or not, please report it in an issue.
+
+1. **Create the network (one person only):** go to [my.zerotier.com](https://my.zerotier.com), create a free
+   account, click **Create A Network** and copy the **Network ID** (16 characters). Keep the network **Private**
+   and, under *Advanced*, leave **Allow Ethernet Broadcast** enabled.
+2. **Install ZeroTier on the TV (every player):** the *ZeroTier One* app usually doesn't show up in the TV's Play
+   Store. Download the Android APK from the [official download page](https://www.zerotier.com/download/) and
+   install it from the PC:
+   ```bash
+   adb connect <TV-IP>:5555
+   adb -s <TV-IP>:5555 install --no-incremental zerotier.apk
+   ```
+3. **Join the network:** open ZeroTier One on the TV (some screens need a pointer; a USB mouse or a remote-control
+   app helps), tap **+**, enter the Network ID and enable the network. Android asks for permission to create a
+   **VPN**: accept it. Some TVs never show this dialog; ZeroTier won't work on them.
+4. **Authorize:** whoever created the network opens its page on my.zerotier.com and ticks **Auth** for each TV in
+   the member list. Each TV gets a ZeroTier IP (for example `10.147.x.x`).
+5. **Check the connection:** from a PC that has also joined the network, run `ping <TV-ZeroTier-IP>`, or, on the
+   TV itself, `adb shell ping -c 3 <other-TV-ZeroTier-IP>`.
+6. **Play:** with ZeroTier active on both TVs, one player opens **Co-op → Local Wi-Fi** and hosts the match; the
+   other joins from the same menu.
+
+Tip: with ZeroTier active, you can install updates remotely on someone else's TV by using its ZeroTier IP instead
+of its local IP (`bash instalar.sh <ZeroTier-IP> ...`), as long as that TV has authorized your PC for ADB.
 
 ## Building (developers)
 
@@ -118,7 +150,7 @@ digits and menu reference shots) that are not in the repository: see `build/char
 
 The focus is improving the experience of playing on a TV:
 
-1. Test Local Wi-Fi co-op with two devices (host, client and P2 name).
+1. Test Local Wi-Fi co-op with two devices (host, client and P2 name), on the same network and over ZeroTier.
 2. Confirm the recent fixes on TV (stuck zombie, sound, sticks after pause).
 3. Redesign the remaining screens: About, More Info, Extras and Help subscreens.
 4. Make the Java HUD's memory reads more robust.

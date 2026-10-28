@@ -2,16 +2,16 @@
 
 [English](README.md) · **Português**
 
-**Call of Duty: Black Ops Zombies** (Android 1.0.11) adaptado para **Android TV**: jogado inteiro com controle,
-sem HUD de toque, com o layout de botões do Black Ops 1 de console e menus redesenhados no estilo quadrinhos do jogo.
+**Call of Duty: Black Ops Zombies** (Android 1.0.11) adaptado para **Android TV**: jogável do início ao fim com controle,
+sem HUD de toque, com o layout de botões do Black Ops 1 de console e menus redesenhados no estilo de quadrinhos do jogo.
 
 <p align="center"><img src="screenshots/01-titulo.png" width="80%" alt="Tela de título Reimagined"></p>
 
 > Projeto de fã, sem fins lucrativos e sem ligação com a Activision.
-> *Call of Duty* e *Call of Duty: Black Ops Zombies* são marcas e propriedade da **Activision Publishing, Inc.**
+> *Call of Duty* e *Call of Duty: Black Ops Zombies* são marcas registradas e propriedade da **Activision Publishing, Inc.**
 >
 > O jogo foi **retirado da Google Play** e não é mais vendido. **Este repositório não contém o jogo** (nenhum APK, OBB,
-> binário ou música originais) e não vai conter. O patch das Releases só funciona aplicado sobre a sua própria cópia
+> binário ou música originais) e nunca vai conter. O patch das Releases só funciona aplicado sobre a sua própria cópia
 > do APK: sem o jogo original, não há como usar este projeto. Não peça os arquivos nas issues.
 
 ## Capturas (TV real, 1280×720)
@@ -25,24 +25,24 @@ sem HUD de toque, com o layout de botões do Black Ops 1 de console e menus rede
 ## O que muda
 
 **Controle (padrão Xbox)**
-- Analógicos para mover e mirar, gatilhos para atirar e mirar (a mira de segurar virou alternar), X para recarregar.
-- Granadas e táticos como no BO1: direcional direito para claymore e LB para o outro tático (Monkey Bomb, Gersh, Matryoshka).
-- Todos os menus navegáveis por D-pad, com foco em cantoneiras e transições sem aparecer o SWF original.
+- Analógicos para mover e mirar, gatilhos para atirar e mirar com a arma (a mira deixou de ser de segurar e passou a alternar), X para recarregar.
+- Granadas e táticos como no BO1: direcional direito para a claymore e LB para o outro tático (Monkey Bomb, Gersh, Matryoshka).
+- Todos os menus são navegáveis pelo D-pad, com foco em cantoneiras e transições que escondem o SWF original.
 
 **Menus e interface**
 - Título "Reimagined", menu principal, seleção de personagem e mapa, Single Player, New Game, Quit, Save & Quit,
   Pause e Game Over redesenhados (camada Java por cima do jogo).
 - Editor de nome pelo controle; o nome aparece no Player Profile, no pause e no lobby do co-op.
-- Pause com jogador, mapa, round e estatísticas, e Start também pausa o Dead Ops.
+- O pause mostra jogador, mapa, round e estatísticas; o Start também pausa o Dead Ops.
 - Timer de partida com a fonte do HUD (liga/desliga no pause) e TIME PLAYED no Player Profile.
 - COD Points, More Apps e compras removidos.
 
 **Jogabilidade (patches no binário)**
 - Ondas e drops no ritmo do BO1: ciclo de drops sem repetição, Carpenter só com janelas quebradas,
-  Death Machine só com energia ligada ou depois de alguém ter tido Quick Revive, DG-2 só ao matar o George.
-- Dead Ops Arcade liberado de saída; morte vai direto ao Game Over.
-- Limite de 30 FPS estável e contador de FPS.
-- Correções: zumbi preso morre depois de 15 s parado e o jogo não fecha mais por um som já liberado.
+  Death Machine só com energia ligada ou depois de alguém ter tido Quick Revive, DG-2 só depois de matar o George.
+- Dead Ops Arcade liberado desde o início; a morte vai direto ao Game Over.
+- Limite estável de 30 FPS e contador de FPS.
+- Correções: o zumbi preso morre depois de 15 s parado, e o jogo não fecha mais quando termina um som que já tinha sido liberado da memória.
 
 ## Estado
 
@@ -97,6 +97,36 @@ Você precisa do APK e do OBB originais (tabela acima), de um PC com `adb` e `xd
 - **Já tem o jogo original instalado na TV?** A assinatura é diferente: desinstale-o antes. Isso apaga os saves.
 - Use sempre `--no-incremental`; a instalação incremental já apagou o app e os dados numa TV.
 
+## Co-op pela internet com ZeroTier (experimental)
+
+O co-op **Local Wi-Fi** só procura parceiros na mesma rede. O [ZeroTier](https://www.zerotier.com) cria uma rede
+local virtual entre casas diferentes, de modo que duas TVs em cidades distintas "enxergam" uma à outra como se
+estivessem no mesmo Wi-Fi.
+
+> ⚠️ **Ainda não testado.** O co-op não foi testado nem na mesma rede, e o jogo pode procurar o host por broadcast,
+> que nem sempre passa pela VPN no Android. Se funcionar (ou não), conte numa issue.
+
+1. **Criar a rede (só uma pessoa):** entre em [my.zerotier.com](https://my.zerotier.com), crie uma conta gratuita,
+   clique em **Create A Network** e copie o **Network ID** (16 caracteres). Deixe a rede como **Private** e, em
+   *Advanced*, mantenha **Allow Ethernet Broadcast** ligado.
+2. **Instalar o ZeroTier na TV (cada jogador):** o app *ZeroTier One* costuma não aparecer na Play Store da TV.
+   Baixe o APK para Android na [página oficial de downloads](https://www.zerotier.com/download/) e instale pelo PC:
+   ```bash
+   adb connect <IP-da-TV>:5555
+   adb -s <IP-da-TV>:5555 install --no-incremental zerotier.apk
+   ```
+3. **Entrar na rede:** abra o ZeroTier One na TV (algumas telas pedem um mouse; um mouse USB ou um app de controle
+   remoto ajudam), toque em **+**, digite o Network ID e ative a rede. O Android pede permissão para criar uma
+   **VPN**: aceite. Algumas TVs não mostram essa janela; nelas o ZeroTier não funciona.
+4. **Autorizar:** quem criou a rede abre a página dela em my.zerotier.com e marca **Auth** em cada TV que
+   aparecer na lista de membros. Cada TV recebe um IP do ZeroTier (por exemplo `10.147.x.x`).
+5. **Testar a conexão:** de um PC também ligado à rede, rode `ping <IP-ZeroTier-da-TV>`, ou, na própria TV, `adb shell ping -c 3 <IP-ZeroTier-da-outra-TV>`.
+6. **Jogar:** com o ZeroTier ativo nas duas TVs, um jogador abre **Co-op → Local Wi-Fi** e cria a partida; o outro
+   entra pelo mesmo menu.
+
+Dica: com o ZeroTier ativo, dá para instalar atualizações remotamente na TV de outra pessoa usando o IP do ZeroTier
+no lugar do IP da rede local (`bash instalar.sh <IP-ZeroTier> ...`), se ela tiver autorizado o seu PC no ADB.
+
 ## Como compilar (desenvolvedores)
 
 Requisitos: Linux, JDK 17, Android SDK (build-tools 36, platform 36), `tools/apktool.jar`, `tools/baksmali.jar`,
@@ -118,7 +148,7 @@ scripts de `menus-edit/`. Com tudo no lugar: `bash build/build.sh` gera `BOZ-TV.
 
 O foco é melhorar a experiência de quem joga na TV:
 
-1. Testar o co-op Local Wi-Fi com dois aparelhos (host, cliente e nome do P2).
+1. Testar o co-op Local Wi-Fi com dois aparelhos (host, cliente e nome do P2), na mesma rede e pelo ZeroTier.
 2. Confirmar na TV as correções recentes (zumbi preso, som, analógicos após o pause).
 3. Redesenhar as telas que faltam: About, More Info, subtelas de Extras e Help.
 4. Deixar a leitura de memória do HUD Java mais robusta.
