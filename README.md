@@ -59,13 +59,13 @@ Testado numa TV TCL com Android 11 (armeabi-v7a, 1280×720, 60 Hz) e um 8BitDo U
 
 ## Arquivos originais necessários
 
-Confira os seus arquivos antes de compilar; com outra versão os patches recusam o binário.
+Confira os seus arquivos; com outra versão o patch não se aplica. O OBB não é modificado: é o mesmo que o jogo baixava.
 
 | Arquivo | Tamanho | SHA-256 |
 |---|---|---|
 | APK Android 1.0.11 (`com.activision.boz`) → `build/base.apk` | 48.440.698 bytes | `348c3ca53291b28380eca44f25198cc64e2e8ce9d56ed4ac170310aff3a86747` |
 | `assets/boz.s3e` (dentro do APK) | — | `f458c15a7111779ad320af377d0bb751294119788ba06d430bee0cc977539fee` |
-| OBB `blackops_etc.dz` usado nos testes | 526.783.202 bytes | `4537aabe0be836048bafd7493ac5f18b33c0bc19d6dd0b873533bb953bbd3a91` |
+| OBB `blackops_etc.dz` (original, vai para a TV **sem alteração**) | 526.783.202 bytes | `4537aabe0be836048bafd7493ac5f18b33c0bc19d6dd0b873533bb953bbd3a91` |
 
 ```bash
 sha256sum base.apk blackops_etc.dz
@@ -74,19 +74,33 @@ unzip -p base.apk assets/boz.s3e | sha256sum
 
 O iOS (`.ipa`) não serve: os patches são para o binário Android.
 
-## Como compilar
+## Como instalar na TV
 
-Requisitos: Linux, JDK 17, Android build-tools (`d8`, `zipalign`, `apksigner`), apktool, Python 3 e ImageMagick.
+Você precisa do APK e do OBB originais (tabela acima), de um PC com `adb` e `xdelta3`, e da TV na mesma rede.
 
-1. Coloque o APK original em `build/base.apk` e extraia os assets dos menus com os scripts de `menus-edit/`
-   e `build/character-menu/` (eles leem o seu OBB `blackops_etc.dz`).
-2. Crie uma keystore própria em `build/boz-tv.jks` (ou ajuste `build/build.sh`).
-3. `bash build/build.sh` gera `BOZ-TV.apk`.
-4. Instale **sem modo incremental** (ele já apagou os saves numa TV):
+1. Na TV, ative **Opções do desenvolvedor → Depuração USB/ADB** e anote o IP (Configurações → Rede).
+2. Baixe o `boz-reimagined-*.xdelta` da página de [Releases](../../releases). Ele só funciona aplicado sobre o
+   APK original e transforma esse APK no APK do Reimagined.
+3. Rode:
    ```bash
-   adb install --no-incremental -r -g BOZ-TV.apk
+   bash instalar.sh 192.168.0.50 base.apk blackops_etc.dz boz-reimagined-v0.1.xdelta
    ```
-   O OBB vai em `/storage/emulated/0/Android/obb/com.activision.boz/`.
+   O script confere os hashes, aplica o patch, instala o APK e copia o OBB para
+   `/storage/emulated/0/Android/obb/com.activision.boz/`. Na primeira vez, a TV pode pedir para autorizar o PC.
+4. Pareie o controle (padrão Xbox) por Bluetooth e abra o jogo.
+
+- **Windows:** aplique o patch com o [Delta Patcher](https://github.com/marco-calautti/DeltaPatcher) ou
+  `xdelta3 -d -s base.apk patch.xdelta BOZ-TV.apk` e instale com
+  `adb install --no-incremental -r -g BOZ-TV.apk` e `adb push`.
+- **Já tem o jogo original instalado na TV?** A assinatura é diferente: desinstale-o antes. Isso apaga os saves.
+- Use sempre `--no-incremental`; a instalação incremental já apagou o app e os dados numa TV.
+
+## Como compilar (desenvolvedores)
+
+Requisitos: Linux, JDK 17, Android SDK (build-tools 36, platform 36), `tools/apktool.jar`, `tools/baksmali.jar`,
+Python 3 e ImageMagick. A build também usa imagens e fontes extraídas do jogo (portraits, cenários, dígitos do HUD
+e prints de referência dos menus), que não estão no repositório: veja `build/character-menu/sources.json` e os
+scripts de `menus-edit/`. Com tudo no lugar: `bash build/build.sh` gera `BOZ-TV.apk`.
 
 ## Como funciona
 
