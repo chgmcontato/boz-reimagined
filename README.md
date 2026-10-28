@@ -5,9 +5,12 @@ sem HUD de toque, com o layout de botões do Black Ops 1 de console e menus rede
 
 <p align="center"><img src="screenshots/01-titulo.png" width="80%" alt="Tela de título Reimagined"></p>
 
-> Projeto de fã, sem fins lucrativos e sem ligação com a Activision. **Este repositório não contém o jogo**:
-> nenhum APK, OBB, binário, textura, fonte ou música originais. Para compilar, é preciso ter uma cópia
-> própria do APK e do OBB.
+> Projeto de fã, sem fins lucrativos e sem ligação com a Activision.
+> *Call of Duty* e *Call of Duty: Black Ops Zombies* são marcas e propriedade da **Activision Publishing, Inc.**
+>
+> O jogo foi **retirado da Google Play** e não é mais vendido. **Este repositório não contém o jogo** (nenhum APK, OBB,
+> binário, textura, fonte ou música originais) e não vai conter: só funciona para quem já tem a sua própria cópia
+> do APK e do OBB. Sem o jogo original, não há como usar este projeto. Não peça os arquivos nas issues.
 
 ## Capturas (TV real, 1280×720)
 
@@ -53,6 +56,23 @@ sem HUD de toque, com o layout de botões do Black Ops 1 de console e menus rede
 | Mapa Moon | ⏸️ pausado (crash ao carregar a No Man's Land) |
 
 Testado numa TV TCL com Android 11 (armeabi-v7a, 1280×720, 60 Hz) e um 8BitDo Ultimate no modo Xbox.
+
+## Arquivos originais necessários
+
+Confira os seus arquivos antes de compilar; com outra versão os patches recusam o binário.
+
+| Arquivo | Tamanho | SHA-256 |
+|---|---|---|
+| APK Android 1.0.11 (`com.activision.boz`) → `build/base.apk` | 48.440.698 bytes | `348c3ca53291b28380eca44f25198cc64e2e8ce9d56ed4ac170310aff3a86747` |
+| `assets/boz.s3e` (dentro do APK) | — | `f458c15a7111779ad320af377d0bb751294119788ba06d430bee0cc977539fee` |
+| OBB `blackops_etc.dz` usado nos testes | 526.783.202 bytes | `4537aabe0be836048bafd7493ac5f18b33c0bc19d6dd0b873533bb953bbd3a91` |
+
+```bash
+sha256sum base.apk blackops_etc.dz
+unzip -p base.apk assets/boz.s3e | sha256sum
+```
+
+O iOS (`.ipa`) não serve: os patches são para o binário Android.
 
 ## Como compilar
 
